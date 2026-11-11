@@ -1,7 +1,7 @@
 name: 自动更新文档列表
 
-# 往 pdf/ 上传或删除 PDF 后，自动重建 index.html 里的文档卡片并提交回去。
-# 也可以在 Actions 页面点 "Run workflow" 手动跑一次（页面显示不准时用这个）。
+# 上传/删除 pdf/ 里的文件后：重建 index.html 的文档卡片 → 提交回仓库 → 直接发布到 GitHub Pages。
+# 这个流程不依赖「分支部署」，所以不会再出现被取消的 pages build 运行。
 
 on:
   push:
@@ -13,20 +13,23 @@ on:
       - "资料说明.json"
       - "一键更新/资料说明.json"
       - "tools/build_docs.py"
+      - "index.html"
   workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  # 同一时间只跑一个重建任务；排队执行，不取消正在跑的那个
-  group: docs-index-rebuild
+  # 同一时间只跑一个任务；排队执行，不取消正在跑的那个
+  group: docs-pages-deploy
   cancel-in-progress: false
 
 jobs:
-  rebuild:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: 检出仓库
@@ -46,9 +49,7 @@ jobs:
           python -m pip install "pymupdf>=1.24,<2" "pillow>=10,<14"
 
       - name: 重建列表并提交
-        # 关键点：每次都先对齐远端最新代码再重新生成。
-        # 连续快速上传/删除时，前一次运行生成的 index.html 会作废，重来一次即可，
-        # 不会出现推送被拒或两次运行互相冲突。
+        # 每次都先对齐远端最新代码再重新生成；推送被拒就重来，连续操作也不会失败
         run: |
           set -e
           BRANCH="${GITHUB_REF_NAME:-main}"
@@ -81,5 +82,23 @@ jobs:
             sleep 5
           done
 
-          echo "重试 3 次仍未推送成功，请到 Actions 页面点 Run workflow 手动跑一次"
+          echo "重试 3 次仍未推送成功"
           exit 1
+
+      - name: 打包发布目录
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 发布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
