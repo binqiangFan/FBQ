@@ -1,7 +1,7 @@
 name: 自动更新文档列表
 
-# 往 pdf/ 上传 PDF（网页上传、git push 都算）后，自动重建 index.html 里的文档卡片并提交回去。
-# 也可以在 Actions 页面点 "Run workflow" 手动跑一次。
+# 往 pdf/ 上传或删除 PDF 后，自动重建 index.html 里的文档卡片并提交回去。
+# 也可以在 Actions 页面点 "Run workflow" 手动跑一次（页面显示不准时用这个）。
 
 on:
   push:
@@ -19,8 +19,9 @@ permissions:
   contents: write
 
 concurrency:
+  # 同一时间只跑一个重建任务；排队执行，不取消正在跑的那个
   group: docs-index-rebuild
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   rebuild:
@@ -44,19 +45,41 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "pymupdf>=1.24,<2" "pillow>=10,<14"
 
-      - name: 重建文档列表
-        run: python tools/build_docs.py
-
-      - name: 提交变更
-        # 有变化才提交，没变化直接跳过（避免无意义的提交和多余的 Pages 构建）
+      - name: 重建列表并提交
+        # 关键点：每次都先对齐远端最新代码再重新生成。
+        # 连续快速上传/删除时，前一次运行生成的 index.html 会作废，重来一次即可，
+        # 不会出现推送被拒或两次运行互相冲突。
         run: |
           set -e
-          if git diff --quiet -- index.html; then
-            echo "index.html 没有变化，跳过提交"
-            exit 0
-          fi
+          BRANCH="${GITHUB_REF_NAME:-main}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "docs: 自动重建文档列表"
-          git push || { git pull --rebase --autostash && git push; }
+
+          for attempt in 1 2 3; do
+            if git fetch -q origin "$BRANCH"; then
+              git reset -q --hard "origin/$BRANCH"
+            else
+              echo "拉取远端失败，用当前工作区继续"
+            fi
+
+            python tools/build_docs.py
+
+            if git diff --quiet -- index.html; then
+              echo "列表与仓库一致，无需提交"
+              exit 0
+            fi
+
+            git add index.html
+            git commit -q -m "docs: 自动重建文档列表"
+
+            if git push origin "HEAD:$BRANCH"; then
+              echo "已重建并推送（第 $attempt 次尝试）"
+              exit 0
+            fi
+
+            echo "推送被拒绝，重新对齐远端后重试（第 $attempt 次）"
+            sleep 5
+          done
+
+          echo "重试 3 次仍未推送成功，请到 Actions 页面点 Run workflow 手动跑一次"
+          exit 1
