@@ -11,6 +11,12 @@
   2. 该 PDF 在 git 里最后一次提交的日期（CI 必须靠它：checkout 出来的文件时间都是构建时刻）
   3. 文件自身的修改时间 / 创建时间中较新的那个
 
+副标题规则（依次降级）：
+  1. 资料说明.json 里手写的“说明”
+  2. PDF 属性里的 Subject / Title / Keywords（剔除 Word 等软件生成的无意义值）
+  3. 首页正文里挑一到两行像副标题的文字（封面页、目录页自动跳过）
+  4. 兜底显示“PDF 文档 · 体积 · 页数”
+
 用法：
   python tools/build_docs.py               # 写回 index.html（内容没变则不写）
   python tools/build_docs.py --check       # 只判断是否需要变更，退出码 1 表示「有变化」
@@ -221,11 +227,113 @@ def build_entries(pdfs, meta):
     return entries
 
 
+NOISE_LINES = {
+    "封面", "封底", "扉页", "目录", "目次", "contents", "content", "index", "ver", "version",
+}
+NOISE_PATTERN = re.compile(
+    r"^(封面|封底|扉页|目录|目次|contents?|index|ver(\.|\s|$)|版本|第\s*\d+\s*页|page\s*\d+)$",
+    re.I,
+)
+BAD_META = re.compile(r"(microsoft|untitled|无标题|word\s*document|doc\d+|presentation|powerpoint)", re.I)
+
+
+def squash(text, limit=40):
+    value = re.sub(r"\s+", " ", str(text)).strip().strip("·-—_,;；。")
+    if len(value) > limit:
+        value = value[:limit].rstrip("·-—_,;；。 ") + "…"
+    return value
+
+
+def pdf_doc(path):
+    if pymupdf is None:
+        return None
+    try:
+        return pymupdf.open(str(path))
+    except Exception:
+        return None
+
+
+def meta_subtitle(doc):
+    """PDF 属性里的 Subject / Title / Keywords，剔除软件自动生成的无意义值。"""
+    if doc is None:
+        return ""
+    try:
+        meta = doc.metadata or {}
+    except Exception:
+        return ""
+    for key in ("subject", "title", "keywords"):
+        value = squash(meta.get(key) or "")
+        if len(value) >= 4 and not BAD_META.search(value):
+            return value
+    return ""
+
+
+def text_subtitle(doc):
+    """首页（必要时第 2 页）里挑一两行像副标题的正文。封面/目录页直接跳过。"""
+    if doc is None:
+        return ""
+    try:
+        total = min(2, doc.page_count)
+    except Exception:
+        return ""
+    for page_index in range(total):
+        try:
+            raw = doc[page_index].get_text() or ""
+        except Exception:
+            continue
+        lines = [squash(s) for s in raw.splitlines()]
+        lines = [s for s in lines if s]
+        if not lines:
+            continue
+        # 整页只有“封面/目录/Ver.xxx”这类标记，或是目录页，不作为副标题来源
+        if NOISE_PATTERN.match(lines[0]) or lines[0] in NOISE_LINES:
+            continue
+        picked = []
+        for line in lines:
+            if len(line) < 4 or len(line) > 24:
+                continue
+            if NOISE_PATTERN.match(line) or line in NOISE_LINES:
+                continue
+            if re.fullmatch(r"[0-9\W]+", line):
+                continue
+            if "©" in line or "copyright" in line.lower():
+                continue
+            # 版本 / 日期这类版式信息不当副标题
+            if re.match(r"^(版本|版次|修订|ver\.|v\d|20\d\d)", line, re.I):
+                continue
+            if re.search(r"(版本|修订|编制|日期)\s*[：:]", line):
+                continue
+            if line not in picked:
+                picked.append(line)
+            if len(picked) == 2:
+                break
+        if picked:
+            return squash(" · ".join(picked))
+    return ""
+
+
+def page_count(doc):
+    try:
+        return doc.page_count if doc is not None else 0
+    except Exception:
+        return 0
+
+
 def entry_subtitle(entry):
-    """副标题：手写说明优先，没有说明时用“PDF 文档 · 体积”；日期单独一行显示。"""
+    """副标题：手写说明优先 → PDF 属性 → 首页正文 → “PDF 文档 · 体积 · 页数”。"""
     if entry["subtitle"]:
         return entry["subtitle"]
-    return "PDF 文档 · %s" % size_text(entry["path"].stat().st_size)
+    if "auto" in entry:
+        return entry["auto"]
+    doc = entry.get("doc") or pdf_doc(entry["path"])
+    value = meta_subtitle(doc) or text_subtitle(doc)
+    if not value:
+        value = "PDF 文档 · %s" % size_text(entry["path"].stat().st_size)
+        pages = page_count(doc)
+        if pages:
+            value += " · %d 页" % pages
+    entry["auto"] = value
+    return value
 
 
 def cover_data_uri(pdf_path):
