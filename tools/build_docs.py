@@ -30,6 +30,7 @@ import json
 import re
 import subprocess
 import sys
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
@@ -52,6 +53,10 @@ END = "<!-- DOCS:END -->"
 COVER_W = 220   # 封面渲染宽度：显示约 92px，2 倍屏够用，体积小可直接内嵌
 COVER_Q = 72    # WebP 质量
 SKIP_PREFIX = ("_", ".")
+
+# PDF 已迁移到阿里云 OSS（国内对象存储，解决 github.io 国内链路慢），
+# 生成的链接指向 OSS 公共读地址；文件名按 UTF-8 百分号编码。
+OSS_BASE = "https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/"
 
 META_CANDIDATES = (
     ROOT / "资料说明.json",
@@ -368,7 +373,7 @@ def render_body(entries, with_cover=True):
     for index, entry in enumerate(entries):
         if index:
             lines.append("")
-        href = "pdf/" + entry["rel"]
+        href = OSS_BASE + urllib.parse.quote(entry["rel"])
         href_attr = esc_attr(href)
         # 磁盘上是原文件名，另存到本地时用页面标题命名
         download_name = re.sub(r'[\\/:*?"<>|]', "-", entry["title"]).strip() or entry["path"].stem
