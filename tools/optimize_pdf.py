@@ -93,6 +93,9 @@ def optimize(src, dst):
                 page.replace_image(xref, stream=new_color)
                 if new_mask:
                     mx = tmp.insert_image(pymupdf.Rect(0, 0, 10, 10), stream=new_mask)
+                    # 手机端 PDF 引擎要求 SMask 必须是 DeviceGray，
+                    # insert_image 偶尔会挂 ICCBased 灰配置，会导致整图不显示
+                    doc.xref_set_key(mx, "ColorSpace", "/DeviceGray")
                     doc.xref_set_key(xref, "SMask", "%d 0 R" % mx)
                 else:
                     doc.xref_set_key(xref, "SMask", "null")

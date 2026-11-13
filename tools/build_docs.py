@@ -388,11 +388,12 @@ def render_body(entries, with_cover=True):
         else:
             thumb = '    <div class="pdf-icon" aria-hidden="true">PDF</div>'
 
-        # 体积与页数：让用户点开前就知道等待成本
+        # 体积与页数：让用户点开前就知道等待成本，与日期合并在同一行
         meta = size_text(entry["path"].stat().st_size)
         pages = page_count(entry.get("doc") or pdf_doc(entry["path"]))
         if pages:
             meta += " · %d 页" % pages
+        date_line = date_text(entry["date"]) + " · " + meta
 
         lines.extend(
             [
@@ -401,8 +402,7 @@ def render_body(entries, with_cover=True):
                 '    <div class="document-info">',
                 '     <h2 class="document-title">%s</h2>' % esc(entry["title"]),
                 '     <p class="document-subtitle">%s</p>' % esc(entry_subtitle(entry)),
-                '     <p class="document-date">%s</p>' % esc(date_text(entry["date"])),
-                '     <p class="document-meta">%s</p>' % esc(meta),
+                '     <p class="document-date">%s</p>' % esc(date_line),
                 '     <div class="actions">',
                 '      <a class="action action-primary" href="%s" target="_blank" rel="noopener">在线预览</a>'
                 % preview_attr,
