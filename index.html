@@ -22,23 +22,18 @@ body{color:var(--ink);font-family:Arial,"Microsoft YaHei","PingFang SC",sans-ser
 h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;font-weight:750;letter-spacing:.5px}
 .intro{width:fit-content;max-width:100%;margin:0 auto 14px;text-align:left;color:#777780;font-size:18px;line-height:1.7}
 .documents{display:grid;gap:12px}
-.document-card{min-height:150px;display:flex;align-items:center;gap:22px;padding:16px 20px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.015);transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
-.document-card:hover{border-color:#d8cbcb;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.045)}
-.pdf-icon{flex:0 0 66px;width:66px;height:74px;border-radius:15px;background:#fbefee;color:#d94a45;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;letter-spacing:.3px}
-.cover{position:relative;flex:0 0 92px;width:92px;aspect-ratio:1/1.4142;overflow:hidden;border-radius:8px;background:#f6f2f2;border:1px solid #e7dfdf;box-shadow:0 1px 3px rgba(0,0,0,.055)}
+.document-card{display:flex;align-items:stretch;gap:18px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.document-card:hover{border-color:#d8cbcb;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.document-card:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.pdf-icon{flex:0 0 78px;width:78px;align-self:flex-start;min-height:110px;border-radius:10px;background:#fbefee;color:#d94a45;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800}
+.cover{position:relative;flex:0 0 96px;width:96px;align-self:flex-start;aspect-ratio:1/1.4142;overflow:hidden;border-radius:8px;background:#f6f2f2;border:1px solid #e7dfdf;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .cover img{width:100%;height:100%;object-fit:cover;display:block}
-.cover-tag{position:absolute;left:0;bottom:0;padding:2px 7px;border-top-right-radius:7px;background:rgba(217,74,69,.94);color:#fff;font-size:10px;font-weight:800;letter-spacing:.6px;line-height:1.5}
-.document-info{min-width:0;flex:1}
-.document-title{margin:0 0 6px;color:#000;font-size:21px;line-height:1.4;font-weight:750;overflow-wrap:anywhere}
-.document-subtitle{margin:0 0 3px;color:var(--muted);font-size:16px;line-height:1.5}
-.document-date{margin:0 0 10px;color:#a29494;font-size:12px;line-height:1.5;letter-spacing:.3px}
-.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.action{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 19px;border-radius:11px;text-decoration:none;font-size:16px;font-weight:700;transition:background .18s ease,border-color .18s ease,transform .18s ease}
-.action:hover{transform:translateY(-1px)}
-.action-primary{background:var(--deep-red);border:1px solid var(--deep-red);color:#fff}
-.action-primary:hover{background:#3c2323}
-.action-secondary{background:#fff;border:1px solid #e0d8d8;color:#221717}
-.action-secondary:hover{background:#faf7f7;border-color:#cbbdbd}
+.cover-tag{position:absolute;left:0;bottom:0;padding:2px 7px;border-top-right-radius:7px;background:rgba(217,74,69,.94);color:#fff;font-size:10px;font-weight:800;line-height:1.5}
+.document-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.info-top{min-width:0}
+.document-title{margin:0 0 5px;color:#000;font-size:19px;line-height:1.35;font-weight:750;overflow-wrap:anywhere}
+.document-subtitle{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.document-date{margin:0;color:#a29494;font-size:12px;line-height:1.4;letter-spacing:.3px}
 .website{margin:54px 0 0;text-align:center;color:#fff;font-size:23px;font-weight:600;letter-spacing:.2px}
 .website a{color:inherit;text-decoration:none}
 .website a:hover{text-decoration:underline}
@@ -47,19 +42,6 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
 .disclaimer{width:100%;margin:22px 0 0;padding-top:16px;border-top:1px solid var(--line);text-align:center;color:#a29494;font-size:12px;line-height:1.6;letter-spacing:.3px}
 .toast{position:fixed;left:50%;bottom:34px;z-index:50;max-width:calc(100% - 40px);padding:12px 20px;border-radius:12px;background:rgba(34,23,23,.94);color:#fff;font-size:15px;line-height:1.6;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.18);opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.viewer{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:#fff}
-.viewer[hidden]{display:none}
-.viewer-bar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:#fff}
-.viewer-title{flex:1;min-width:0;font-size:15px;font-weight:750;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.viewer-page{flex:0 0 auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.viewer-btn{flex:0 0 auto;min-height:34px;display:inline-flex;align-items:center;justify-content:center;padding:0 13px;border:1px solid #e0d8d8;border-radius:9px;background:#fff;color:#221717;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
-.viewer-btn-primary{background:var(--deep-red);border-color:var(--deep-red);color:#fff}
-.viewer-body{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px;background:#f3efef}
-.viewer-body canvas{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.page-slot{position:relative;margin:0 auto 12px;background:#fff;border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden}
-.page-slot canvas{display:block;width:100%;height:auto;margin:0;border-radius:2px}
-.page-slot-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#a29494;font-size:13px}
-.viewer-hint{margin:0;padding:16px 10px;text-align:center;color:var(--muted);font-size:14px;line-height:1.8}
 @media(max-width:600px){
  .page{padding:88px 12px 48px}
  .panel{border-radius:28px;padding:106px 12px 12px}
@@ -71,27 +53,25 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
  .doc-count{margin:0 0 12px;font-size:13px}
  .empty{padding:32px 16px;font-size:14px}
  .disclaimer{margin-top:18px;padding-top:13px;font-size:11px}
- .document-card{min-height:0;padding:14px 12px;gap:13px;border-radius:14px;align-items:flex-start}
- .pdf-icon{flex-basis:50px;width:50px;height:58px;border-radius:12px;font-size:14px;margin-top:2px}
- .cover{flex-basis:72px;width:72px;border-radius:7px;margin-top:2px}
+ .document-card{padding:12px;gap:12px;border-radius:14px}
+ .pdf-icon{flex-basis:52px;width:52px;min-height:74px;border-radius:10px;font-size:13px}
+ .cover{flex-basis:76px;width:76px;border-radius:7px}
  .cover-tag{font-size:9px;padding:1px 5px}
- .document-title{font-size:17px;line-height:1.45;margin-bottom:4px}
- .document-subtitle{font-size:13px;line-height:1.5;margin-bottom:2px}
- .document-date{font-size:11px;margin-bottom:8px}
- .actions{gap:8px}
- .action{min-height:38px;padding:0 12px;border-radius:9px;font-size:14px}
+ .document-info{gap:4px}
+ .document-title{font-size:17px;line-height:1.35;margin-bottom:4px}
+ .document-subtitle{font-size:13px;line-height:1.4}
+ .document-date{font-size:11px}
  .website{font-size:18px;margin-top:42px}
 }
 @media(max-width:360px){
  .page{padding-left:10px;padding-right:10px}
  .panel{padding-left:10px;padding-right:10px}
- .document-card{gap:10px;padding:15px 10px}
- .pdf-icon{flex-basis:44px;width:44px;height:52px}
- .cover{flex-basis:60px;width:60px}
+ .document-card{gap:10px;padding:11px 10px}
+ .pdf-icon{flex-basis:46px;width:46px;min-height:66px}
+ .cover{flex-basis:64px;width:64px}
  .document-title{font-size:15px}
  .document-subtitle{font-size:12px}
  .document-date{font-size:10px}
- .action{padding:0 9px;font-size:13px}
 }
 </style>
 </head>
@@ -101,34 +81,30 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
   <a class="logo-wrap" href="https://www.drivedream.com/" target="_blank" rel="noopener" title="访问官网 www.drivedream.com" aria-label="访问镌极科技官网"><img src="data:image/png;base64,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" alt="镌极科技标志"></a>
   <p class="brand">镌极科技</p>
   <h1 id="page-title">产品资料中心</h1>
-  <p class="intro">设备说明书与技术支持文档。<br>选择所需文件，即可在线预览或下载。</p>
+  <p class="intro">设备说明书与技术支持文档。<br>点击卡片即可下载对应文件。</p>
 
   <!-- DOCS:START -->
   <p class="doc-count">共 2 份文档 · 最近更新 2026-11-13</p>
   <div class="documents">
-   <article class="document-card">
+   <article class="document-card" data-pdf="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/HAUX%E6%95%B0%E6%8E%A7%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%8A%A5%E8%AD%A6%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" data-name="HAUX数控系统操作与报警综合手册.pdf" role="button" tabindex="0" aria-label="下载 HAUX数控系统操作与报警综合手册">
     <div class="cover"><img src="data:image/webp;base64,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" alt="HAUX数控系统操作与报警综合手册 首页" decoding="async" width="220"><span class="cover-tag">PDF</span></div>
     <div class="document-info">
-     <h2 class="document-title">HAUX数控系统操作与报警综合手册</h2>
-     <p class="document-subtitle">HMI 界面操作 · NCK 报警维护</p>
-     <p class="document-date">2026-11-13 · 10.7 MB · 164 页</p>
-     <div class="actions">
-      <a class="action action-primary" href="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/HAUX%E6%95%B0%E6%8E%A7%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%8A%A5%E8%AD%A6%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf#page=1&amp;view=Fit" target="_blank" rel="noopener">在线预览</a>
-      <a class="action action-secondary" href="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/HAUX%E6%95%B0%E6%8E%A7%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%8A%A5%E8%AD%A6%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" download="HAUX数控系统操作与报警综合手册.pdf" data-pdf="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/HAUX%E6%95%B0%E6%8E%A7%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%8A%A5%E8%AD%A6%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" data-name="HAUX数控系统操作与报警综合手册.pdf">下载 PDF</a>
+     <div class="info-top">
+      <h2 class="document-title">HAUX数控系统操作与报警综合手册</h2>
+      <p class="document-subtitle">HMI 界面操作 · NCK 报警维护</p>
      </div>
+     <p class="document-date">2026-11-13 · 10.7 MB · 164 页</p>
     </div>
    </article>
 
-   <article class="document-card">
+   <article class="document-card" data-pdf="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/AK650%E6%9C%BA%E5%BA%8A%E6%93%8D%E4%BD%9C%E7%BB%B4%E6%8A%A4%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" data-name="AK650机床操作维护与故障排查综合手册.pdf" role="button" tabindex="0" aria-label="下载 AK650机床操作维护与故障排查综合手册">
     <div class="cover"><img src="data:image/webp;base64,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" alt="AK650机床操作维护与故障排查综合手册 首页" decoding="async" width="220"><span class="cover-tag">PDF</span></div>
     <div class="document-info">
-     <h2 class="document-title">AK650机床操作维护与故障排查综合手册</h2>
-     <p class="document-subtitle">机床操作 · 机械维护 · PLC 故障排查</p>
-     <p class="document-date">2026-11-13 · 2.8 MB · 71 页</p>
-     <div class="actions">
-      <a class="action action-primary" href="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/AK650%E6%9C%BA%E5%BA%8A%E6%93%8D%E4%BD%9C%E7%BB%B4%E6%8A%A4%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf#page=1&amp;view=Fit" target="_blank" rel="noopener">在线预览</a>
-      <a class="action action-secondary" href="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/AK650%E6%9C%BA%E5%BA%8A%E6%93%8D%E4%BD%9C%E7%BB%B4%E6%8A%A4%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" download="AK650机床操作维护与故障排查综合手册.pdf" data-pdf="https://fbq-docs-2026.oss-cn-shanghai.aliyuncs.com/pdf/AK650%E6%9C%BA%E5%BA%8A%E6%93%8D%E4%BD%9C%E7%BB%B4%E6%8A%A4%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E7%BB%BC%E5%90%88%E6%89%8B%E5%86%8C.pdf" data-name="AK650机床操作维护与故障排查综合手册.pdf">下载 PDF</a>
+     <div class="info-top">
+      <h2 class="document-title">AK650机床操作维护与故障排查综合手册</h2>
+      <p class="document-subtitle">机床操作 · 机械维护 · PLC 故障排查</p>
      </div>
+     <p class="document-date">2026-11-13 · 2.8 MB · 71 页</p>
     </div>
    </article>
   </div>
@@ -137,15 +113,6 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
  </section>
  <div class="website"><a href="https://www.drivedream.com/" target="_blank" rel="noopener">www.drivedream.com/</a></div>
 </main>
-<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="文档预览">
- <div class="viewer-bar">
-  <span class="viewer-title" id="viewer-title">文档预览</span>
-  <span class="viewer-page" id="viewer-page"></span>
-  <a class="viewer-btn viewer-btn-primary" id="viewer-download" href="#" rel="noopener">下载</a>
-  <button class="viewer-btn" id="viewer-close" type="button">关闭</button>
- </div>
- <div class="viewer-body" id="viewer-body"><p class="viewer-hint">正在打开文档…</p></div>
-</div>
 <script>
 (function () {
   var isWeChat = /MicroMessenger/i.test(navigator.userAgent || '');
@@ -167,7 +134,8 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
     }, holdMs || 2600);
   }
 
-  function findPdfLink(node) {
+  // 整张卡片即下载入口：沿父级向上找带 data-pdf 的卡片节点。
+  function findCard(node) {
     while (node && node !== document) {
       if (node.getAttribute && node.getAttribute('data-pdf')) return node;
       node = node.parentNode;
@@ -175,17 +143,24 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
     return null;
   }
 
-  // 非微信浏览器直接走原生 <a download>：可复用 HTTP 缓存、支持断点续传。
+  // 非微信浏览器：临时 <a download> 走原生下载，可复用 HTTP 缓存、支持断点续传。
+  function nativeDownload(url, name) {
+    var a = document.createElement('a');
+    a.href = url;
+    if (name) a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   // 微信内置浏览器对跨域 OSS 直连会弹“安全跳转”拦截页，这里改用 XHR
   // （CORS 已配置）把文件取成 Blob，再用同域 blob: 链接保存，不触发拦截。
-  function saveBlob(url, name, onProgress) {
+  function saveBlob(url, name) {
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.responseType = 'blob';
-      xhr.onprogress = function (e) {
-        if (onProgress && e.lengthComputable) onProgress(e.loaded, e.total);
-      };
       xhr.onload = function () {
         if (xhr.status >= 200 && xhr.status < 300) {
           var blobUrl = URL.createObjectURL(xhr.response);
@@ -206,350 +181,46 @@ h1{color:#000;text-align:center;font-size:32px;line-height:1.3;margin:0 0 12px;f
       xhr.send();
     });
   }
-  window.__savePdfBlob = saveBlob;
 
-  document.addEventListener('click', function (event) {
-    var link = findPdfLink(event.target);
-    if (!link) return;
+  function doDownload(card) {
+    var url = card.getAttribute('data-pdf');
+    var name = card.getAttribute('data-name') || '';
 
-    // file:// 打开时浏览器禁止下载本地文件，只能预览，如实提示
+    // file:// 打开时浏览器禁止下载本地文件，如实提示
     if (location.protocol === 'file:') {
-      event.preventDefault();
-      var localUrl = link.getAttribute('href');
-      try {
-        localUrl = new URL(localUrl, location.href).href;
-      } catch (err) {}
-      toast('以本地文件方式打开时，浏览器不允许直接下载；请用本地 HTTP 方式或部署后下载。', 4600);
-      window.open(localUrl, '_blank');
+      toast('以本地文件方式打开时，浏览器不允许直接下载；请部署后再下载。', 4600);
+      window.open(url, '_blank');
       return;
     }
 
-    if (!isWeChat) return;  // 非微信：原生 <a download>，保留缓存与断点续传
-
-    // 微信：跨域直连会被安全拦截，改为 Blob 下载
-    event.preventDefault();
-    var pdfUrl = (link.getAttribute('href') || '').split('#')[0];
-    var pdfName = link.getAttribute('data-name') || link.getAttribute('download') || '';
-    toast('正在下载…');
-    saveBlob(pdfUrl, pdfName).then(function () {
-      toast('已开始下载，可在通知或文件中查看');
-    }).catch(function () {
-      toast('下载失败，请稍后重试');
-    });
-  });
-})();
-</script>
-<script>
-// 统一的页内预览：跨域 OSS 直连在微信里会弹下载/安全拦截，在部分电脑
-// 浏览器里也会变成下载。这里在页面内用 pdf.js 懒加载渲染：只渲染当前
-// 可见及附近几页，滚出视口立即销毁，内存占用恒定，所有设备点“在线预览”
-// 都在页内直接查看，不跳转、不下载。
-(function () {
-  var viewer = document.getElementById('viewer');
-  var bodyEl = document.getElementById('viewer-body');
-  var titleEl = document.getElementById('viewer-title');
-  var pageEl = document.getElementById('viewer-page');
-  var dlEl = document.getElementById('viewer-download');
-  var closeEl = document.getElementById('viewer-close');
-  if (!viewer || !bodyEl || !closeEl) return;
-
-  // 用 2.16 这版：编译目标是老浏览器，微信 PC 端这种老内核也能跑
-  var BUILDS = [
-    {
-      lib: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js',
-      worker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js'
-    },
-    {
-      lib: 'https://fastly.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js',
-      worker: 'https://fastly.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js'
-    }
-  ];
-  var libPromise = null;
-  var workerUrl = '';
-  var loadedPdf = null;
-  var slots = [];                 // {num, el, state:0空/1渲染中/2已渲染}
-  var renderQueue = [];
-  var running = false;
-  var observer = null;
-  var MAX_RENDERED = 6;
-
-  function contentWidth() {
-    return Math.max(240, Math.min(bodyEl.clientWidth - 24, 760));
-  }
-
-  // 逐个源尝试加载；单个源超时（12s）不直接判失败，而是切到下一个，
-  // 只有全部源都失败才 reject，避免手机网络慢时被首个源的超时卡死。
-  function loadLib() {
-    if (libPromise) return libPromise;
-    libPromise = new Promise(function (resolve, reject) {
-      var i = 0;
-      function attempt() {
-        if (window.pdfjsLib) { resolve(window.pdfjsLib); return; }
-        if (i >= BUILDS.length) { reject(new Error('load failed')); return; }
-        var build = BUILDS[i++];
-        var settled = false;
-        var timer = setTimeout(function () {
-          if (settled) return;
-          settled = true;
-          attempt();
-        }, 12000);
-        var s = document.createElement('script');
-        s.src = build.lib;
-        s.async = true;
-        s.onload = function () {
-          if (settled) return;
-          if (window.pdfjsLib) {
-            settled = true;
-            clearTimeout(timer);
-            workerUrl = build.worker;
-            resolve(window.pdfjsLib);
-          } else {
-            settled = true;
-            clearTimeout(timer);
-            attempt();
-          }
-        };
-        s.onerror = function () {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          attempt();
-        };
-        document.head.appendChild(s);
-      }
-      attempt();
-    });
-    return libPromise;
-  }
-
-  function setHint(text) {
-    bodyEl.innerHTML = '';
-    var p = document.createElement('p');
-    p.className = 'viewer-hint';
-    p.textContent = text;
-    bodyEl.appendChild(p);
-  }
-
-  function dispose(slot) {
-    if (slot.state === 1) {
-      var i = renderQueue.indexOf(slot.num);
-      if (i > -1) renderQueue.splice(i, 1);
-    }
-    slot.el.innerHTML = '';
-    slot.state = 0;
-  }
-
-  function enqueue(num) {
-    var slot = slots[num - 1];
-    if (!slot || slot.state !== 0) return;
-    slot.state = 1;
-    if (renderQueue.indexOf(num) === -1) renderQueue.push(num);
-    pump();
-  }
-
-  function pump() {
-    if (running) return;
-    var num = renderQueue.shift();
-    if (!num) return;
-    var slot = slots[num - 1];
-    if (!slot || viewer.hidden || slot.state !== 1) {
-      if (slot) slot.state = 0;
-      pump();
-      return;
-    }
-    running = true;
-    var widthPx = contentWidth();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    loadedPdf.getPage(num).then(function (page) {
-      if (viewer.hidden || slot.state !== 1) return null;
-      var base = page.getViewport({ scale: 1 });
-      var vp = page.getViewport({ scale: (widthPx / base.width) * dpr });
-      var canvas = document.createElement('canvas');
-      canvas.width = Math.round(vp.width);
-      canvas.height = Math.round(vp.height);
-      canvas.style.width = widthPx + 'px';
-      var cssH = Math.round(vp.height / dpr);
-      canvas.style.height = cssH + 'px';
-      slot.el.style.height = cssH + 'px';   // 用真实页尺寸修正占位高度
-      slot.el.innerHTML = '';
-      slot.el.appendChild(canvas);
-      slot.state = 2;
-      return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-    }).then(function () {
-      running = false;
-      if (slot.state === 0) slot.el.innerHTML = '';
-      trim();
-      pump();
-    }).catch(function () {
-      running = false;
-      if (slot) slot.state = 0;
-      pump();
-    });
-  }
-
-  function currentPage() {
-    var top = bodyEl.getBoundingClientRect().top + 4;
-    for (var i = 0; i < slots.length; i++) {
-      var r = slots[i].el.getBoundingClientRect();
-      if (r.bottom > top) return slots[i].num;
-    }
-    return slots.length ? slots[slots.length - 1].num : 1;
-  }
-
-  function trim() {
-    var rendered = slots.filter(function (s) { return s.state === 2; });
-    if (rendered.length <= MAX_RENDERED) return;
-    var cur = currentPage();
-    rendered.sort(function (a, b) {
-      return Math.abs(b.num - cur) - Math.abs(a.num - cur);
-    });
-    while (rendered.length > MAX_RENDERED) {
-      dispose(rendered.shift());
+    if (isWeChat) {
+      toast('正在下载…');
+      saveBlob(url, name).then(function () {
+        toast('已开始下载，可在通知或文件中查看');
+      }).catch(function () {
+        toast('下载失败，请稍后重试');
+      });
+    } else {
+      nativeDownload(url, name);
+      toast('已开始下载，可在浏览器下载记录中查看');
     }
   }
 
-  var scrollRaf = 0;
-  function onScroll() {
-    if (scrollRaf) return;
-    scrollRaf = requestAnimationFrame(function () {
-      scrollRaf = 0;
-      if (loadedPdf) pageEl.textContent = currentPage() + ' / ' + loadedPdf.numPages;
-    });
-  }
-
-  // 立即按第一页的宽高比建好全部占位（不逐页 getPage、不用 Promise.all），
-  // 第一时间渲染可见页；个别尺寸不同的页在实际渲染时由 pump 修正高度。
-  function buildDoc(pdf) {
-    loadedPdf = pdf;
-    if (observer) { observer.disconnect(); observer = null; }
-    var widthPx = contentWidth();
-    pdf.getPage(1).then(function (first) {
-      if (viewer.hidden) return;
-      docBuilt = true;
-      var base = first.getViewport({ scale: 1 });
-      var ratio = base.height / base.width;
-      var frag = document.createDocumentFragment();
-      slots = new Array(pdf.numPages);
-      for (var n = 1; n <= pdf.numPages; n++) {
-        var slotEl = document.createElement('div');
-        slotEl.className = 'page-slot';
-        slotEl.style.width = widthPx + 'px';
-        slotEl.style.height = Math.round(widthPx * ratio) + 'px';
-        slotEl.setAttribute('data-num', n);
-        var label = document.createElement('span');
-        label.className = 'page-slot-label';
-        label.textContent = '第 ' + n + ' 页';
-        slotEl.appendChild(label);
-        frag.appendChild(slotEl);
-        slots[n - 1] = { num: n, el: slotEl, state: 0 };
-      }
-      bodyEl.innerHTML = '';
-      bodyEl.appendChild(frag);
-      bodyEl.scrollTop = 0;
-      observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          var num = Number(entry.target.getAttribute('data-num'));
-          if (entry.isIntersecting) {
-            enqueue(num);
-          } else {
-            var slot = slots[num - 1];
-            if (slot && slot.state === 2) dispose(slot);
-          }
-        });
-      }, { root: bodyEl, rootMargin: '500px 0px', threshold: 0 });
-      slots.forEach(function (s) { observer.observe(s.el); });
-      pageEl.textContent = '1 / ' + pdf.numPages;
-    }).catch(function () {
-      if (!viewer.hidden) setHint('文档打开失败，请点右上角「下载」保存后查看。');
-    });
-  }
-
-  function closeViewer() {
-    viewer.hidden = true;
-    docBuilt = false;
-    bodyEl.innerHTML = '';
-    slots = [];
-    renderQueue = [];
-    pageEl.textContent = '';
-    document.body.style.overflow = '';
-    if (observer) { observer.disconnect(); observer = null; }
-    if (loadedPdf) {
-      try { loadedPdf.destroy(); } catch (e) {}
-      loadedPdf = null;
-    }
-  }
-
-  var docBuilt = false;
-  function openViewer(url, title, downloadUrl, downloadName) {
-    docBuilt = false;
-    titleEl.textContent = title || '文档预览';
-    dlEl.href = downloadUrl || url;
-    if (downloadName) dlEl.setAttribute('download', downloadName);
-    pageEl.textContent = '';
-    viewer.hidden = false;
-    document.body.style.overflow = 'hidden';
-    setHint('正在打开文档…');
-    loadLib().then(function (lib) {
-      lib.GlobalWorkerOptions.workerSrc = workerUrl;
-      var task = lib.getDocument({ url: url });
-      task.onProgress = function (data) {
-        // 文档已开始构建后不再写提示，避免 setHint 清空已建好的页面
-        if (data.total && !viewer.hidden && !docBuilt) {
-          setHint('正在加载文档… ' + Math.round(data.loaded / data.total * 100) + '%');
-        }
-      };
-      return task.promise;
-    }).then(function (pdf) {
-      if (!viewer.hidden) buildDoc(pdf);
-    }).catch(function () {
-      if (!docBuilt) setHint('当前环境暂时无法内嵌预览，请点右上角「下载」保存后查看。');
-    });
-  }
-
+  // 点击卡片任意位置即下载
   document.addEventListener('click', function (event) {
-    var a = event.target && event.target.closest ? event.target.closest('a.action-primary') : null;
-    if (!a) return;
-    var href = a.getAttribute('href') || '';
-    if (href.indexOf('.pdf') === -1) return;
+    var card = findCard(event.target);
+    if (!card) return;
     event.preventDefault();
-    var card = a.closest('.document-card');
-    var titleNode = card ? card.querySelector('.document-title') : null;
-    var dlNode = card ? card.querySelector('.action-secondary') : null;
-    var url = href.split('#')[0];
-    openViewer(url, titleNode ? titleNode.textContent : '文档预览', url,
-               dlNode ? dlNode.getAttribute('data-name') : '');
+    doDownload(card);
   });
 
-  // 窗口尺寸变化后按新宽度重建占位与渲染
-  var resizeTimer = null;
-  window.addEventListener('resize', function () {
-    if (!loadedPdf || viewer.hidden) return;
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-      if (loadedPdf && !viewer.hidden) buildDoc(loadedPdf);
-    }, 250);
-  });
-
-  bodyEl.addEventListener('scroll', onScroll);
-  closeEl.addEventListener('click', closeViewer);
-
-  // 预览内的“下载”：微信下同样走 Blob，避免跨域安全拦截页
-  dlEl.addEventListener('click', function (event) {
-    if (typeof window.__savePdfBlob !== 'function') return;
-    event.preventDefault();
-    var dlUrl = (dlEl.getAttribute('href') || '').split('#')[0];
-    var dlName = dlEl.getAttribute('download') || '';
-    var oldText = dlEl.textContent;
-    dlEl.textContent = '下载中…';
-    window.__savePdfBlob(dlUrl, dlName).then(function () {
-      dlEl.textContent = oldText;
-    }).catch(function () {
-      dlEl.textContent = '下载失败';
-      setTimeout(function () { dlEl.textContent = oldText; }, 1800);
-    });
-  });
+  // 键盘可达：卡片 role=button，Enter / 空格触发下载
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !viewer.hidden) closeViewer();
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var card = findCard(event.target);
+    if (!card) return;
+    event.preventDefault();
+    doDownload(card);
   });
 })();
 </script>
