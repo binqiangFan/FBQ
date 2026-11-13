@@ -380,8 +380,7 @@ def render_body(entries, with_cover=True):
         if not download_name.lower().endswith(".pdf"):
             download_name += ".pdf"
         name_attr = esc_attr(download_name)
-        # view=Fit：打开即整页可见、左右留白居中，不会被拉满整屏宽
-        preview_attr = href_attr + "#page=1&amp;view=Fit"
+        card_label = esc_attr("下载 " + entry["title"])
 
         cover = cover_data_uri(entry["path"]) if with_cover else None
         if cover is not None:
@@ -400,20 +399,20 @@ def render_body(entries, with_cover=True):
             meta += " · %d 页" % pages
         date_line = date_text(entry["date"]) + " · " + meta
 
+        # 整张卡片即下载入口：无按钮，点击卡片任意位置即下载；
+        # data-pdf 指向 OSS 地址，data-name 为保存文件名。
         lines.extend(
             [
-                '   <article class="document-card">',
+                '   <article class="document-card" data-pdf="%s" data-name="%s" '
+                'role="button" tabindex="0" aria-label="%s">'
+                % (href_attr, name_attr, card_label),
                 thumb,
                 '    <div class="document-info">',
-                '     <h2 class="document-title">%s</h2>' % esc(entry["title"]),
-                '     <p class="document-subtitle">%s</p>' % esc(entry_subtitle(entry)),
-                '     <p class="document-date">%s</p>' % esc(date_line),
-                '     <div class="actions">',
-                '      <a class="action action-primary" href="%s" target="_blank" rel="noopener">在线预览</a>'
-                % preview_attr,
-                '      <a class="action action-secondary" href="%s" download="%s" data-pdf="%s" data-name="%s">下载 PDF</a>'
-                % (href_attr, name_attr, href_attr, name_attr),
+                '     <div class="info-top">',
+                '      <h2 class="document-title">%s</h2>' % esc(entry["title"]),
+                '      <p class="document-subtitle">%s</p>' % esc(entry_subtitle(entry)),
                 "     </div>",
+                '     <p class="document-date">%s</p>' % esc(date_line),
                 "    </div>",
                 "   </article>",
             ]
