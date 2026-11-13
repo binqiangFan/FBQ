@@ -1,35 +1,34 @@
-"""PDF 图片压缩工具（保留透明蒙版）
+"""PDF 图片压缩工具（保持原始分辨率，消除文字重影）
 
 用法:
     python optimize_pdf.py 输入.pdf 输出.pdf
 
-做法:
-  - 最长边超过 1250 的图片按 LANCZOS 缩小，颜色层转 JPEG(q78)；
-  - 带 SMask 透明蒙版的图片，蒙版按 PNG(Flate) 无损保留并重新挂接，
-    全不透明的蒙版直接丢弃；
-  - 最长边 < 400 的小图标保持原样，避免 JPEG 破坏平面图形；
-  - 新体积不足原体积 90% 时不替换；
-  - 保存后若安装了 pikepdf，再做一次线性化（Fast Web View）。
+为什么这样改:
+  旧版把 1920px 截图统一 LANCZOS 缩到 1250px 再转 JPEG(q78)，细文字在缩放
+  重采样和 JPEG 振铃效应下出现“重影/白边”。本版不再缩小图片，保持原始
+  分辨率，文字几何不变；并按内容自适应选择编码：
+    - 原本就是 JPEG 的：原样保留，不二次压缩；
+    - 平面/线框类 HMI 截图（大面积纯色、锐利文字）：保留无损 PNG/Flate，
+      这类图无损往往比 JPEG 更小且文字清晰；
+    - 真正照片/复杂渐变：转 JPEG(q85)，且仅当确实更小才替换；
+    - 最长边 < 400 的小图标：保持原样。
+  带 SMask 透明蒙版的图片，蒙版在原分辨率下无损保留并重新挂接（不再缩放，
+  与颜色层完全对齐），全不透明蒙版直接丢弃。
 依赖: pymupdf, pillow, pikepdf(可选)
 """
 import io, os, sys, time
 import pymupdf
 from PIL import Image
 
-MAX_SIDE = 1250
-QUALITY = 78
+QUALITY = 85
 SMALL_LIMIT = 400
+# 仅当 JPEG 比原流小到这个比例才替换，避免无意义的体积/画质交换
+REPLACE_RATIO = 0.95
 
 
 def _jpeg(img):
     buf = io.BytesIO()
     img.save(buf, "JPEG", quality=QUALITY, optimize=True)
-    return buf.getvalue()
-
-
-def _png(img):
-    buf = io.BytesIO()
-    img.save(buf, "PNG", optimize=True)
     return buf.getvalue()
 
 
@@ -51,44 +50,43 @@ def optimize(src, dst):
                 continue
             seen.add(xref)
             try:
+                extracted = doc.extract_image(xref)
+                old_bytes = extracted["image"]
+                ext = extracted["ext"]
+                width, height = extracted["width"], extracted["height"]
+
+                # 体积基准必须用 PDF 里实际存储的原始流（xref_stream_raw）；
+                # extract_image 会把 PNG 重新压缩得更小，不能作为比较基准。
                 old_total = len(doc.xref_stream_raw(xref) or b"")
                 smk = doc.xref_get_key(xref, "SMask")
                 old_smx = int(smk[1].split()[0]) if smk[0] == "xref" else 0
                 if old_smx:
                     old_total += len(doc.xref_stream_raw(old_smx) or b"")
 
-                cpix = pymupdf.Pixmap(doc, xref)
-                if cpix.n - cpix.alpha > 3:
-                    cpix = pymupdf.Pixmap(pymupdf.csRGB, cpix)
-                elif cpix.alpha:
-                    cpix = pymupdf.Pixmap(cpix, 0)
-                rgb = Image.frombytes("RGB", (cpix.width, cpix.height), cpix.samples)
-
-                if max(rgb.size) < SMALL_LIMIT:
+                # 已是 JPEG：保留原流，避免二次压缩产生代际损失
+                # 小图标：保持无损，避免 JPEG 破坏平面图形
+                if ext == "jpeg" or max(width, height) < SMALL_LIMIT:
                     stats["kept"] += 1
                     continue
 
-                alpha = None
+                # 无损图：在原分辨率下试编码 JPEG，比较体积
+                rgb = Image.open(io.BytesIO(old_bytes)).convert("RGB")
+                new_color = _jpeg(rgb)
+
+                # JPEG 没有明显更小：保留原无损流（含原 SMask），文字最清晰
+                if len(new_color) >= old_total * REPLACE_RATIO:
+                    stats["kept"] += 1
+                    continue
+
+                # 处理透明蒙版：原分辨率，不缩放，与颜色层对齐
+                new_mask = None
                 if old_smx:
                     mpix = pymupdf.Pixmap(doc, old_smx)
                     alpha = Image.frombytes("L", (mpix.width, mpix.height), mpix.samples)
-                    if alpha.getextrema()[0] == 255:
-                        alpha = None
-
-                if max(rgb.size) > MAX_SIDE:
-                    r = MAX_SIDE / max(rgb.size)
-                    rgb = rgb.resize((max(1, int(rgb.width * r)),
-                                      max(1, int(rgb.height * r))), Image.LANCZOS)
-                    if alpha is not None:
-                        alpha = alpha.resize(rgb.size, Image.LANCZOS)
-
-                new_color = _jpeg(rgb)
-                new_mask = _png(alpha) if alpha is not None else None
-                new_total = len(new_color) + (len(new_mask) if new_mask else 0)
-
-                if new_total >= old_total * 0.9:
-                    stats["kept"] += 1
-                    continue
+                    if alpha.getextrema()[0] != 255:  # 非全不透明才保留
+                        mb = io.BytesIO()
+                        alpha.save(mb, "PNG", optimize=True)
+                        new_mask = mb.getvalue()
 
                 page.replace_image(xref, stream=new_color)
                 if new_mask:
